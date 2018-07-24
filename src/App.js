@@ -24,17 +24,17 @@ class App extends Component {
   removeMatches = ({matches, pile}) => {
     if(this.state.sticks[pile] >= matches) {
       const newSticks = this.state.sticks.map((count, index) => index === pile ? count - matches : count);
-      
-      this.setState(prevState => { return {
-        error: false,
-        currentPlayer: this.switchPlayer(prevState.currentPlayer),
-        sticks: newSticks
-      }}, () => {
-        const finished = this.checkForFinish();
-        if (finished) {
-          this.setState({currentPlayer: this.switchPlayer()});
-        }
-      });
+      if (this.checkForFinish(newSticks)) {
+        this.setState({
+          finished: true
+        });
+      } else {
+        this.setState(prevState => { return {
+          error: false,
+          currentPlayer: this.switchPlayer(prevState.currentPlayer),
+          sticks: newSticks
+        }});
+      }
     } else {
       this.setState({error: true});
     }

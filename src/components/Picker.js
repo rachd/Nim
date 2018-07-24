@@ -28,14 +28,14 @@ class Picker extends Component {
     render() {
         return (
             <form onSubmit={this.submit}>
-                <p>Choose</p>
-                <select value={this.state.matches} onChange={this.changeMatches}>
+                <span>Choose</span>
+                <select style={{margin: "0 10px"}} value={this.state.matches} onChange={this.changeMatches}>
                     <option value={1}>1</option>
                     <option value={2}>2</option>
                     <option value={3}>3</option>
                 </select>
-                <p>from pile</p>
-                <select value={this.state.pile} onChange={this.changePile}>
+                <span>from pile</span>
+                <select style={{margin: "0 10px"}} value={this.state.pile} onChange={this.changePile}>
                     <option value={0}>1</option>
                     <option value={1}>2</option>
                     <option value={2}>3</option>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Sticks from "./components/Sticks";
 import Picker from "./components/Picker";
+import {calculateMoves, switchPlayer, generateMove} from "./helpers/AI";
 
 class App extends Component {
   constructor(props) {
@@ -12,14 +13,27 @@ class App extends Component {
       finished: false
     }
   }
+  
+  generateSticks = () => Math.floor(Math.random() * Math.floor(3)) + 1;
 
   checkForFinish = (sticks) => {
     return sticks[0] === 0 && sticks[1] === 0 && sticks[2] === 0
   }
 
-  switchPlayer = (currentPlayer) => currentPlayer === 1 ? 2 : 1;
-  
-  generateSticks = () => Math.floor(Math.random() * Math.floor(19)) + 1;
+  playAI = () => {
+    const newSticks = generateMove(this.state);
+    if (this.checkForFinish(newSticks)) {
+      this.setState({
+        finished: true
+      });
+    } else {
+      this.setState(prevState => { return {
+        error: false,
+        currentPlayer: switchPlayer(prevState.currentPlayer),
+        sticks: newSticks
+      }});
+    }
+  }
 
   removeMatches = ({matches, pile}) => {
     if(this.state.sticks[pile] >= matches) {
@@ -31,9 +45,13 @@ class App extends Component {
       } else {
         this.setState(prevState => { return {
           error: false,
-          currentPlayer: this.switchPlayer(prevState.currentPlayer),
+          currentPlayer: switchPlayer(prevState.currentPlayer),
           sticks: newSticks
-        }});
+        }}, () => {
+          if (this.state.currentPlayer === 2) {
+            this.playAI();
+          }
+        });
       }
     } else {
       this.setState({error: true});
@@ -46,7 +64,7 @@ class App extends Component {
       <div>
         <h1>Current Player: {this.state.currentPlayer}</h1>
         {this.state.error && (<h2>Not enough sticks in the pile</h2>)}
-        <Picker onSubmit={this.removeMatches}/>
+        <Picker onSubmit={this.removeMatches} enabled={this.state.currentPlayer === 1}/>
         {this.state.sticks.map((num, index) => (
           <Sticks key={index} style={{display:"block"}} number={num} pile={index + 1}/>
         ))}

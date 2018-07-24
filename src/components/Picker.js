@@ -40,10 +40,12 @@ class Picker extends Component {
                     <option value={1}>2</option>
                     <option value={2}>3</option>
                 </select>
-                <input type="submit" value="Submit"/>
+                <input type="submit" value="Submit" />
             </form>
         )
     }
 }
+                //disabled={!this.props.enabled}/>
+
 
 export default Picker;

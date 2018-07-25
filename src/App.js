@@ -14,7 +14,7 @@ class App extends Component {
     }
   }
   
-  generateSticks = () => Math.floor(Math.random() * Math.floor(3)) + 1;
+  generateSticks = () => Math.floor(Math.random() * Math.floor(2)) + 1;
 
   checkForFinish = (sticks) => {
     return sticks[0] === 0 && sticks[1] === 0 && sticks[2] === 0

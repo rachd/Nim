@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Sticks from "./components/Sticks";
 import Picker from "./components/Picker";
-import {calculateMoves, switchPlayer, generateMove} from "./helpers/AI";
+import {switchPlayer, generateMove} from "./helpers/AI";
 
 class App extends Component {
   constructor(props) {
@@ -14,7 +14,7 @@ class App extends Component {
     }
   }
   
-  generateSticks = () => Math.floor(Math.random() * Math.floor(2)) + 1;
+  generateSticks = () => Math.floor(Math.random() * Math.floor(5)) + 1;
 
   checkForFinish = (sticks) => {
     return sticks[0] === 0 && sticks[1] === 0 && sticks[2] === 0

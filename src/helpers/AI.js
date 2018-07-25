@@ -12,7 +12,7 @@ const getOneMoves = (state) => {
     for (let index in state) {
         if (state[index].pile > 0) {
             moves.push(state.map(({pile, player}, i) => {
-                return i == index ? {pile: pile - 1, player: switchPlayer(player)}
+                return i === index ? {pile: pile - 1, player: switchPlayer(player)}
                     : {pile: pile, player: switchPlayer(player)};
             }));
         }
@@ -25,7 +25,7 @@ const getTwoMoves = (state) => {
     for (let index in state) {
         if (state[index].pile > 1) {
             moves.push(state.map(({pile, player}, i) => {
-                return i == index ? {pile: pile - 2, player: switchPlayer(player)}
+                return i === index ? {pile: pile - 2, player: switchPlayer(player)}
                     : {pile: pile, player: switchPlayer(player)};
             }));
         }
@@ -38,7 +38,7 @@ const getThreeMoves = (state) => {
     for (let index in state) {
         if (state[index].pile > 2) {
             moves.push(state.map(({pile, player}, i) => {
-                return i == index ? {pile: pile - 3, player: switchPlayer(player)}
+                return i === index ? {pile: pile - 3, player: switchPlayer(player)}
                     : {pile: pile, player: switchPlayer(player)};
             }));
         }
@@ -48,16 +48,8 @@ const getThreeMoves = (state) => {
 
 const switchPlayer = (currentPlayer) => currentPlayer === 1 ? 2 : 1;
 
-const calculateUtility = (move) => {
-    if(checkForFinish(move)) {
-        return calculateScore(move);
-    } else {
-        return findBestMove(calculateMoves(move));
-    }
-}
-
 const calculateScore = (move) => {
-    const loser = switchPlayer(move.player);
+    const loser = switchPlayer(move[0].player);
     if (loser === 1) {
         return 1
     } else {
@@ -76,19 +68,22 @@ const convertFromAppState = (appState) => {
 }
 
 const convertToAppState = (move) => {
-    return move.move.map(({pile, player}) => pile);
+    return move.map(({pile, player}) => pile);
 }
 
 const findBestMove = (move) => {
+    // returns {move, score}
     if (checkForFinish(move)) {
         return {move: move, score: calculateScore(move)};
     } else {
         const moves = calculateMoves(move);
         if (move[0].player === 1) {
-            const scores = moves.map(move => findBestMove(move).score)
+            // find min
+            const scores = moves.map(move => findBestMove(move).score);
             const min = scores.reduce((lowest, current, index) => current < scores[lowest] ? index : lowest, 0);
             return {move: moves[min], score: scores[min]}
         } else {
+            // find max
             const scores = moves.map(move => findBestMove(move).score)
             const max = scores.reduce((highest, current, index) => current > scores[highest] ? index : highest, 0);
             return {move: moves[max], score: scores[max]}
@@ -98,7 +93,7 @@ const findBestMove = (move) => {
 
 const generateMove = (appState) => {
     const state = convertFromAppState(appState);
-    const move = findBestMove(state);
+    const move = findBestMove(state).move;
     return convertToAppState(move);
 }
 

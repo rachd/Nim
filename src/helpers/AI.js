@@ -76,21 +76,29 @@ const convertFromAppState = (appState) => {
 }
 
 const convertToAppState = (move) => {
-    return move.map(({pile, player}) => pile);
+    return move.move.map(({pile, player}) => pile);
 }
 
-const findBestMove = (moves) => {
-    const player = moves[0].player;
-    const utilities = moves.map(move => calculateUtility(move));//.reduce((move, acc) => move < acc ? move : acc, moves[0])
-    const index = player == 1 ?
-        utilities.reduce((lowest, current, index) => current > utilities[lowest] ? index : lowest, 0)
-        : utilities.reduce((lowest, current, index) => current < utilities[lowest] ? index : lowest, 0);
-    return moves[index];
+const findBestMove = (move) => {
+    if (checkForFinish(move)) {
+        return {move: move, score: calculateScore(move)};
+    } else {
+        const moves = calculateMoves(move);
+        if (move[0].player === 1) {
+            const scores = moves.map(move => findBestMove(move).score)
+            const min = scores.reduce((lowest, current, index) => current < scores[lowest] ? index : lowest, 0);
+            return {move: moves[min], score: scores[min]}
+        } else {
+            const scores = moves.map(move => findBestMove(move).score)
+            const max = scores.reduce((highest, current, index) => current > scores[highest] ? index : highest, 0);
+            return {move: moves[max], score: scores[max]}
+        }
+    }
 }
 
 const generateMove = (appState) => {
     const state = convertFromAppState(appState);
-    const move = findBestMove(calculateMoves(state));
+    const move = findBestMove(state);
     return convertToAppState(move);
 }
 

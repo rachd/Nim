@@ -1,7 +1,7 @@
 // state in the form of [
-//    {pile: pile1, currentPlayer: playerNum}, 
-//    {pile: pile2, currentPlayer: playerNum}, 
-//    {pile: pile3, currentPlayer: playerNum}]
+//    {pile: pile1, player: playerNum}, 
+//    {pile: pile2, player: playerNum}, 
+//    {pile: pile3, player: playerNum}]
 
 const calculateMoves = (state) => {
     return [...getOneMoves(state), ...getTwoMoves(state), ...getThreeMoves(state)];
@@ -57,7 +57,7 @@ const calculateUtility = (move) => {
 }
 
 const calculateScore = (move) => {
-    const loser = switchPlayer(move.currentPlayer);
+    const loser = switchPlayer(move.player);
     if (loser === 1) {
         return 1
     } else {
@@ -81,7 +81,7 @@ const convertToAppState = (move) => {
 
 const findBestMove = (moves) => {
     const player = moves[0].player;
-    const utilities = moves.map(move => calculateUtility(move));//.reduce((move, acc) => move < acc ? move : acc, moves[0])
+    const utilities = moves.map(move => calculateUtility(move));
     const index = player == 1 ?
         utilities.reduce((lowest, current, index) => current > utilities[lowest] ? index : lowest, 0)
         : utilities.reduce((lowest, current, index) => current < utilities[lowest] ? index : lowest, 0);

@@ -53,7 +53,8 @@ class App extends Component {
   playAI = () => {
     const newSticks = generateMove({
       player: this.state.player,
-      sticks: this.state.sticks
+      sticks: this.state.sticks,
+      ai: this.state.aiPlayer
     });
     if (this.checkForFinish(newSticks)) {
       this.setState(prevState => {return {

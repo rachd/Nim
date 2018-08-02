@@ -19,7 +19,7 @@ class App extends Component {
 
   switchPlayer = (currentPlayer) => currentPlayer === 1 ? 2 : 1;
   
-  generateSticks = () => Math.floor(Math.random() * Math.floor(19)) + 1;
+  generateSticks = () => Math.floor(Math.random() * Math.floor(14)) + 1;
 
   removeMatches = ({matches, pile}) => {
     if(this.state.sticks[pile] >= matches) {

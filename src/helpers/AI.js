@@ -1,7 +1,6 @@
-// state in the form of [
-//    {pile: pile1, player: playerNum}, 
-//    {pile: pile2, player: playerNum}, 
-//    {pile: pile3, player: playerNum}]
+// state in the form of {
+//  player: playerNum,
+// [pile1, pile2, pile3]}
 
 const calculateMoves = (state) => {
     return [...getOneMoves(state), ...getTwoMoves(state), ...getThreeMoves(state)];
@@ -9,12 +8,15 @@ const calculateMoves = (state) => {
 
 const getOneMoves = (state) => {
     const moves = [];
-    for (let index in state) {
-        if (state[index].pile > 0) {
-            moves.push(state.map(({pile, player}, i) => {
-                return i === index ? {pile: pile - 1, player: switchPlayer(player)}
-                    : {pile: pile, player: switchPlayer(player)};
-            }));
+    const { sticks, player } = state;
+    for (let index in sticks) {
+        if (sticks[index] > 0) {
+            moves.push({
+                player: switchPlayer(player),
+                sticks: sticks.map((pile, i) => {
+                    return i == index ? pile - 1 : pile
+                })
+            })
         }
     }
     return moves;
@@ -22,12 +24,15 @@ const getOneMoves = (state) => {
 
 const getTwoMoves = (state) => {
     const moves = [];
-    for (let index in state) {
-        if (state[index].pile > 1) {
-            moves.push(state.map(({pile, player}, i) => {
-                return i === index ? {pile: pile - 2, player: switchPlayer(player)}
-                    : {pile: pile, player: switchPlayer(player)};
-            }));
+    const { sticks, player } = state;    
+    for (let index in sticks) {
+        if (sticks[index] > 1) {
+            moves.push({
+                player: switchPlayer(player),
+                sticks: sticks.map((pile, i) => {
+                    return i == index ? pile - 2 : pile
+                })
+            })
         }
     }
     return moves;
@@ -35,12 +40,15 @@ const getTwoMoves = (state) => {
 
 const getThreeMoves = (state) => {
     const moves = [];
-    for (let index in state) {
-        if (state[index].pile > 2) {
-            moves.push(state.map(({pile, player}, i) => {
-                return i === index ? {pile: pile - 3, player: switchPlayer(player)}
-                    : {pile: pile, player: switchPlayer(player)};
-            }));
+    const { sticks, player } = state;    
+    for (let index in sticks) {
+        if (sticks[index] > 2) {
+            moves.push({
+                player: switchPlayer(player),
+                sticks: sticks.map((pile, i) => {
+                    return i == index ? pile - 3 : pile
+                })
+            })
         }
     }
     return moves;
@@ -49,7 +57,7 @@ const getThreeMoves = (state) => {
 const switchPlayer = (currentPlayer) => currentPlayer === 1 ? 2 : 1;
 
 const calculateScore = (move) => {
-    const loser = switchPlayer(move[0].player);
+    const loser = switchPlayer(move.player);
     if (loser === 1) {
         return 1
     } else {
@@ -58,17 +66,19 @@ const calculateScore = (move) => {
 }
 
 const checkForFinish = (move) => {
-    return move[0].pile === 0 && move[1].pile === 0 && move[2].pile === 0
+    const { sticks } = move;
+    return sticks[0] === 0 && sticks[1] === 0 && sticks[2] === 0
 }
 
 const convertFromAppState = (appState) => {
-    return appState.sticks.map(pile => {
-        return {pile: pile, player: appState.currentPlayer}
-    });
+    return {
+        player: appState.currentPlayer,
+        sticks: appState.sticks
+    }
 }
 
 const convertToAppState = (move) => {
-    return move.map(({pile, player}) => pile);
+    return move.sticks;
 }
 
 const findBestMove = (move) => {
@@ -77,7 +87,7 @@ const findBestMove = (move) => {
         return {move: move, score: calculateScore(move)};
     } else {
         const moves = calculateMoves(move);
-        if (move[0].player === 1) {
+        if (move.player === 1) {
             // find min
             const scores = moves.map(move => findBestMove(move).score);
             const min = scores.reduce((lowest, current, index) => current < scores[lowest] ? index : lowest, 0);

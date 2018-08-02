@@ -1,6 +1,7 @@
 // state in the form of {
 //  player: playerNum,
-// [pile1, pile2, pile3]}
+// [pile1, pile2, pile3]},
+// ai: aiPlayerNum
 
 const calculateMoves = (state) => {
     return [...getOneMoves(state), ...getTwoMoves(state), ...getThreeMoves(state)];
@@ -8,14 +9,15 @@ const calculateMoves = (state) => {
 
 const getOneMoves = (state) => {
     const moves = [];
-    const { sticks, player } = state;
+    const { sticks, player, ai } = state;
     for (let index in sticks) {
         if (sticks[index] > 0) {
             moves.push({
                 player: switchPlayer(player),
                 sticks: sticks.map((pile, i) => {
                     return i == index ? pile - 1 : pile
-                })
+                }),
+                ai
             })
         }
     }
@@ -24,14 +26,15 @@ const getOneMoves = (state) => {
 
 const getTwoMoves = (state) => {
     const moves = [];
-    const { sticks, player } = state;    
+    const { sticks, player, ai } = state;    
     for (let index in sticks) {
         if (sticks[index] > 1) {
             moves.push({
                 player: switchPlayer(player),
                 sticks: sticks.map((pile, i) => {
                     return i == index ? pile - 2 : pile
-                })
+                }),
+                ai
             })
         }
     }
@@ -40,14 +43,15 @@ const getTwoMoves = (state) => {
 
 const getThreeMoves = (state) => {
     const moves = [];
-    const { sticks, player } = state;    
+    const { sticks, player, ai } = state;    
     for (let index in sticks) {
         if (sticks[index] > 2) {
             moves.push({
                 player: switchPlayer(player),
                 sticks: sticks.map((pile, i) => {
                     return i == index ? pile - 3 : pile
-                })
+                }),
+                ai
             })
         }
     }
@@ -73,7 +77,8 @@ const checkForFinish = (move) => {
 const convertFromAppState = (appState) => {
     return {
         player: appState.currentPlayer,
-        sticks: appState.sticks
+        sticks: appState.sticks,
+        ai: appState.aiPlayer
     }
 }
 
@@ -82,21 +87,21 @@ const convertToAppState = (move) => {
 }
 
 const findBestMove = (move) => {
-    // returns {move, score}
+    // returns {move, score, ai}
     if (checkForFinish(move)) {
-        return {move: move, score: calculateScore(move)};
+        return {move: move, score: calculateScore(move), ai: move.ai};
     } else {
         const moves = calculateMoves(move);
-        if (move.player === 1) {
+        if (move.player !== move.ai) {
             // find min
             const scores = moves.map(move => findBestMove(move).score);
             const min = scores.reduce((lowest, current, index) => current < scores[lowest] ? index : lowest, 0);
-            return {move: moves[min], score: scores[min]}
+            return {move: moves[min], score: scores[min], ai: moves[min].ai}
         } else {
             // find max
             const scores = moves.map(move => findBestMove(move).score)
             const max = scores.reduce((highest, current, index) => current > scores[highest] ? index : highest, 0);
-            return {move: moves[max], score: scores[max]}
+            return {move: moves[max], score: scores[max], ai: moves[max].ai}
         }
     }
 }
